@@ -7,8 +7,8 @@ OBJS_C   = $(SRCS_C:.f90=.o)
 TARGET   = 0_rri
 
 ifeq ($(CC), gcc)
-CFLAGS = -0 -fopenmp -g -pg -Wall
-FFLAGS = -0 -fopenmp -g -pg -Wall
+CFLAGS = -0 -fopenmp -Wall
+FFLAGS = -0 -fopenmp -Wall
 OUTPUTFILE=OUTPUT_my_OpenMP$(FC)
 endif
  
@@ -27,6 +27,14 @@ $(TARGET): $(OBJS_C)
  
 $(OBJS_C): $(SRCS_C)
 	$(FC) $(FFLAGS) -c $(SRCS_C)
+
+debug: $(TARGET)
+
+$(TARGET): $(OBJS_C)
+	$(FC) -o $@ $(FFLAGS) -g -pg $(OBJS_C) 
+ 
+$(OBJS_C): $(SRCS_C)
+	$(FC) $(FFLAGS) -c -g -pg $(SRCS_C)
 
 help:	
 	@echo " "
