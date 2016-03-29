@@ -15,6 +15,7 @@ endif
 ifeq ($(CC), icc)
 CFLAGS = -0 -openmp -Wall
 FFLAGS = -0 -openmp -Wall
+DBGFFLAGS = -0 -g -pg -fopenmp -Wall
 OUTPUTFILE=OUTPUT_my_OpenMP$(FC)
 endif
 
@@ -27,14 +28,6 @@ $(TARGET): $(OBJS_C)
  
 $(OBJS_C): $(SRCS_C)
 	$(FC) $(FFLAGS) -c $(SRCS_C)
-
-debug: $(TARGET)
-
-$(TARGET): $(OBJS_C)
-	$(FC) -o $@ $(FFLAGS) -g -pg $(OBJS_C) 
- 
-$(OBJS_C): $(SRCS_C)
-	$(FC) $(FFLAGS) -c -g -pg $(SRCS_C)
 
 help:	
 	@echo " "
