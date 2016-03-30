@@ -503,6 +503,8 @@ sout = 0.d0
 out_dt = dble(maxt) / dble(outnum)
 out_dt = max(1.d0, out_dt)
 out_next = nint(out_dt)
+!****YANN****
+out_dt = 1
 tt = 0
 
 do t = 1, maxt
