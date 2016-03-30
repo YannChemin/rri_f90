@@ -5,6 +5,7 @@
 subroutine funcr( hr_idx, fr_idx, qr_idx )
 use globals
 use dam_mod, only: dam_switch, damflg, dam_qout, dam_volmax, dam_floodq, dam_num, dam_loc
+use omp_lib
 implicit none
 
 real(8) hr_idx(riv_count), fr_idx(riv_count), qr_idx(riv_count)
@@ -119,7 +120,7 @@ integer dif_p, dif_n
 qr_idx(:) = 0.d0
 qr_div_idx(:) = 0.d0
 
-!$omp parallel do private(kk,zb_p,hr_p,distance,zb_n,hr_n,dh,hw,qr_temp)
+ !$omp parallel do private(kk,zb_p,hr_p,distance,zb_n,hr_n,dh,hw,qr_temp)
 do k = 1, riv_count
 
  if(domain_riv_idx(k) .eq. 2) cycle
@@ -173,7 +174,7 @@ do k = 1, riv_count
  endif
 
 enddo
-!$omp end parallel do
+ !$omp end parallel do
 
 end subroutine qr_calc
 

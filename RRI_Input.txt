@@ -1,19 +1,19 @@
 RRI_Input_Format_Ver1_3
 
-./infile/PID1KtoQ/rain/rain_KtoQ.txt
-./infile/PID1KtoQ/adem2_500m_KtoQ.asc
-./infile/PID1KtoQ/acc_500m_KtoQ.asc
-./infile/PID1KtoQ/adir_500m_KtoQ.asc
+./infile/lowerindus/rain/rain_dummy.txt
+./infile/lowerindus/adem2_lid1k.txt
+./infile/lowerindus/acc_lid1k.txt
+./infile/lowerindus/adir_lid1k.txt
 
 0                # utm(1) or latlon(0)
 1                # 4-direction (0), 8-direction(1)
-336             # lasth
+504              # lasth
 600              # dt
 60               # dt_riv
-112              # outnum
-73.6d0           # xllcorner_rain
-32.1d0           # yllcorner_rain
-10 10          # cellsize_rain
+168              # outnum
+66.0d0           # xllcorner_rain
+23.0d0           # yllcorner_rain
+1000 1000          # cellsize_rain
 
 3                # num_of_landuse
 1 1 1            # diffusion(1) or kinematic(0)
@@ -22,8 +22,8 @@ RRI_Input_Format_Ver1_3
 0.1d0 0.1d0 0.1d0          # ka
 4.0d0 4.0d0 4.0d0          # beta
 1.0d0 1.0d0 1.0d0          # soildepth
-0.1d0 0.1d0 0.02d0         # ns_slope
-0.015d0                    # ns_river
+0.1d0 0.1d0 0.03d0         # ns_slope
+0.03d0                    # ns_river
 
 5.56d-7  6.06d-7  5.56d-7  # ksv
 0.471d0  0.453d0  0.471d0  # delta
@@ -39,17 +39,17 @@ RRI_Input_Format_Ver1_3
 63000            # height_limit_param
 
 1
-./infile/PID1KtoQ/river_width.asc
-./infile/PID1KtoQ/river_height.asc
-./infile/PID1KtoQ/banks/emb_5m_at.asc
+./infile/lowerindus/width_cross_lid1k_P-K_half_ToriFix1_New.asc
+./infile/lowerindus/depth_cross_lid1k_ToriFix1_New.asc
+./infile/lowerindus/banks/bank_crrctd_to7_25032016.asc
 
 0.d0             # init_cond_slo
 0.d0             # init_cond_riv
 
-0 0 0
-./infile/hs_init_dummy.out
-./infile/PID1KtoQ/hr_init_lid1k.txt
-./infile/gampt_ff_init_dummy.out
+1 1 1
+./infile/lowerindus/init/hs_000004.out
+./infile/lowerindus/init/hr_000004.out
+./infile/lowerindus/init/gampt_ff_000004.out
 
 0 0
 ./infile/wlev_bound_dummy.txt
@@ -57,10 +57,10 @@ RRI_Input_Format_Ver1_3
 
 0 2
 ./infile/qs_bound_dummy.txt
-./infile/PID1KtoQ/bounds/Khanki04-18Sep2014.txt
+./infile/lowerindus/bounds/bound_lid_2010_T10.txt
 
 1
-./infile/PID1KtoQ/landuse.asc
+./infile/lowerindus/lu_lid1k.txt
 
 0
 ./infile/thai/damcnt_thai.txt
@@ -69,12 +69,12 @@ RRI_Input_Format_Ver1_3
 ./infile/thai/div_thai.txt
 
 0
-./infile/PID1KtoQ/evp_4mm.txt
+./infile/lowerindus/evp_4mm.txt
 66.0d0           # xllcorner_evp
 23.0d0           # yllcorner_evp
 1000.d0 1000.d0  # cellsize_evp
 
-1 1 1 0 0 0 1
+1 1 1 1 1 1 1
 ./out/hs_
 ./out/hr_
 ./out/qr_

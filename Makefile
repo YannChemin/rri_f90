@@ -7,15 +7,14 @@ OBJS_C   = $(SRCS_C:.f90=.o)
 TARGET   = 0_rri
 
 ifeq ($(CC), gcc)
-CFLAGS = -0 -fopenmp -Wall
-FFLAGS = -0 -fopenmp -Wall
+CFLAGS = -03 -fopenmp -Wall -ffree-form -ffree-line-length-none
+FFLAGS = -03 -fopenmp -Wall -ffree-form -ffree-line-length-none
 OUTPUTFILE=OUTPUT_my_OpenMP$(FC)
 endif
  
 ifeq ($(CC), icc)
-CFLAGS = -0 -openmp -Wall
-FFLAGS = -0 -openmp -Wall
-DBGFFLAGS = -0 -g -pg -fopenmp -Wall
+CFLAGS = -03 -openmp -Wall -ffree-form -ffree-line-length-none
+FFLAGS = -03 -openmp -Wall -ffree-form -ffree-line-length-none
 OUTPUTFILE=OUTPUT_my_OpenMP$(FC)
 endif
 

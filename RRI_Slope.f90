@@ -4,6 +4,7 @@
 
 subroutine funcs(hs_idx, qp_t_idx, fs_idx, qs_idx )
 use globals
+use omp_lib
 implicit none
 
 real(8) hs_idx(slo_count), qp_t_idx(slo_count), fs_idx(slo_count)
@@ -57,11 +58,11 @@ endif
 
 ! qs_idx > 0 --> discharge flowing out from a cell
 
-!$omp parallel do
+ !$omp parallel do
 do k = 1, slo_count
  fs_idx(k) = qp_t_idx(k) - (qs_idx(1,k) + qs_idx(2,k) + qs_idx(3,k) + qs_idx(4,k))
 enddo
-!$omp end parallel do
+ !$omp end parallel do
 
 do k = 1, slo_count
  do l = 1, lmax
@@ -96,7 +97,7 @@ integer dif_p, dif_n
 qs_idx = 0.d0
 !emb = 0.d0
 
-!$omp parallel do private(kk,zb_p,hs_p,ns_p,ka_p,da_p,dm_p,b_p,l,distance,len,zb_n,hs_n,ns_n,ka_n,da_n,dm_n,b_n,lev_p,lev_n,dh)
+ !$omp parallel do private(kk,zb_p,hs_p,ns_p,ka_p,da_p,dm_p,b_p,l,distance,len,zb_n,hs_n,ns_n,ka_n,da_n,dm_n,b_n,lev_p,lev_n,dh)
 do k = 1, slo_count
 
  zb_p = zb_slo_idx(k)
@@ -167,7 +168,7 @@ do k = 1, slo_count
 
  enddo
 enddo
-!$omp end parallel do
+ !$omp end parallel do
 
 end subroutine qs_calc
 

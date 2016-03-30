@@ -9,6 +9,7 @@ use globals
 use runge_mod
 use dam_mod, only: dam_switch, dam_vol_temp
 use tecout_mod
+use omp_lib
 implicit none
 
 ! variable definition
@@ -455,9 +456,9 @@ if( evp_switch .ne. 0 ) then
  do
   read(11, *, iostat = ios) t, nx_evp, ny_evp
   do i = 1, ny_evp
-   read(11, *, iostat = ios) (rdummy, j = 1, nx_evp)
+   read(11, *, iostat = ios) rdummy
   enddo
-  if( ios.lt.0 ) exit
+  if( ios /= 0 ) exit
   tt = tt + 1
  enddo
  tt_max_evp = tt - 1
@@ -492,6 +493,7 @@ endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!! STEP 3: CALCULATION 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!write(*,*) "Step3: calculation"
 
 rain_sum = 0.d0
 aevp_sum = 0.d0
@@ -505,7 +507,7 @@ tt = 0
 
 do t = 1, maxt
 
- !if(mod(t, 1).eq.0) write(*,*) t, "/", maxt
+ if(mod(t, 1).eq.0) write(*,*) t, "/", maxt
 
  !******* RIVER CALCULATION ******************************
  if( riv_thresh .lt. 0 ) go to 2
