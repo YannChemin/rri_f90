@@ -11,7 +11,7 @@ parameter( ddt_min_slo = 1.d0 )
 ! for detailed simulation
 !parameter( eps = 0.001d0 )
 !parameter( ddt_min_riv = 0.01d0 )
-!parameter( ddt_min_slo = 1.d0 )
+!parameter( ddt_min_slo = 0.01d0 )
 
 ! for rough simulation
 !parameter( eps = 0.1d0 )
@@ -24,8 +24,12 @@ parameter (safety=0.9d0,pgrow=-.2d0,pshrnk=-.25d0,errcon=1.89d-4)
 real(8), allocatable, save :: ks2(:), ks3(:), ks4(:), ks5(:), ks6(:)
 real(8), allocatable, save :: hs_temp(:), hs_err(:)
 
+real(8), allocatable, save :: kg2(:), kg3(:), kg4(:), kg5(:), kg6(:)
+real(8), allocatable, save :: hg_temp(:), hg_err(:)
+
 real(8), allocatable, save :: kr2(:), kr3(:), kr4(:), kr5(:), kr6(:)
-real(8), allocatable, save :: hr_temp(:), hr_err(:)
+!real(8), allocatable, save :: hr_temp(:), hr_err(:)
+real(8), allocatable, save :: vr_temp(:), vr_err(:), hr_err(:) ! v1.4
 
 real(8) a2,a3,a4,a5,a6,b21,b31,b32,b41,b42,b43,b51,b52,b53, &
         b54,b61,b62,b63,b64,b65,c1,c3,c4,c6,dc1,dc3,dc4,dc5,dc6

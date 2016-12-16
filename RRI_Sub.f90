@@ -4,7 +4,7 @@
 subroutine riv_idx_setting
 use globals
 implicit none
-integer i, j, ii, jj
+integer i, j, ii, jj, k, kk ! add v1.4(k, kk)
 real(8) distance
 
 riv_count = 0
@@ -20,6 +20,7 @@ allocate( width_idx(riv_count), depth_idx(riv_count) )
 allocate( height_idx(riv_count), area_ratio_idx(riv_count) )
 allocate( zb_riv_idx(riv_count), dis_riv_idx(riv_count) )
 allocate( dif_riv_idx(riv_count) )
+allocate( sec_map_idx(riv_count), len_riv_idx(riv_count) ) ! add v1.4
 
 riv_count = 0
 riv_ij2idx(:, :) = 0
@@ -40,6 +41,8 @@ do i = 1, ny
   zb_riv_idx(riv_count) = zb_riv(i, j)
   riv_ij2idx(i, j) = riv_count
   dif_riv_idx(riv_count) = dif(land(i, j))
+  sec_map_idx(riv_count) = sec_map(i, j)
+  len_riv_idx(riv_count) = len_riv(i, j) ! add v1.4
 
  enddo
 enddo
@@ -126,6 +129,14 @@ do i = 1, ny
  enddo
 enddo
 
+! add v1.4
+if( sec_length_switch .eq. 1 ) then
+ do k = 1, riv_count 
+  kk = down_riv_idx(k)
+  dis_riv_idx(k) = ( len_riv_idx(k) + len_riv_idx(kk) ) / 2.d0
+ enddo
+endif
+
 end subroutine riv_idx_setting
 
 
@@ -177,13 +188,18 @@ enddo
 
 allocate( slo_idx2i(slo_count), slo_idx2j(slo_count), slo_ij2idx(ny, nx) )
 allocate( down_slo_idx(i4, slo_count), domain_slo_idx(slo_count) )
-allocate( zb_slo_idx(slo_count), dis_slo_idx(i4, slo_count), len_slo_idx(i4, slo_count) )
+allocate( zb_slo_idx(slo_count), dis_slo_idx(i4, slo_count), len_slo_idx(i4, slo_count), acc_slo_idx(slo_count) )
 allocate( down_slo_1d_idx(slo_count), dis_slo_1d_idx(slo_count), len_slo_1d_idx(slo_count) )
-allocate( land_idx(slo_count), ns_slo_idx(slo_count) )
-allocate( ka_idx(slo_count), da_idx(slo_count) )
-allocate( dm_idx(slo_count), beta_idx(slo_count) )
-allocate( soildepth_idx(slo_count) )
+allocate( land_idx(slo_count) )
+
 allocate( dif_slo_idx(slo_count) )
+allocate( ns_slo_idx(slo_count) )
+allocate( soildepth_idx(slo_count) )
+allocate( gammaa_idx(slo_count) )
+
+allocate( ksv_idx(slo_count), faif_idx(slo_count), infilt_limit_idx(slo_count) )
+allocate( ka_idx(slo_count), gammam_idx(slo_count), beta_idx(slo_count), da_idx(slo_count), dm_idx(slo_count) )
+allocate( ksg_idx(slo_count), gammag_idx(slo_count), kg0_idx(slo_count), fpg_idx(slo_count), rgl_idx(slo_count) )
 
 slo_count = 0
 slo_ij2idx(:, :) = 0
@@ -195,15 +211,31 @@ do i = 1, ny
   slo_idx2j(slo_count) = j
   domain_slo_idx(slo_count) = domain(i, j)
   zb_slo_idx(slo_count) = zb(i, j)
+  acc_slo_idx(slo_count) = acc(i, j)
   slo_ij2idx(i, j) = slo_count
   land_idx(slo_count) = land(i, j)
+
+  dif_slo_idx(slo_count) = dif(land(i, j))
   ns_slo_idx(slo_count) = ns_slope(land(i,j))
+  soildepth_idx(slo_count) = soildepth(land(i, j))
+  gammaa_idx(slo_count) = gammaa(land(i, j))
+
+  ksv_idx(slo_count) = ksv(land(i,j))
+  faif_idx(slo_count) = faif(land(i,j))
+  infilt_limit_idx(slo_count) = infilt_limit(land(i,j))
+  
   ka_idx(slo_count) = ka(land(i,j))
+  gammam_idx(slo_count) = gammam(land(i,j))
+  beta_idx(slo_count) = beta(land(i,j))
   da_idx(slo_count) = da(land(i,j))
   dm_idx(slo_count) = dm(land(i,j))
-  beta_idx(slo_count) = beta(land(i,j))
-  soildepth_idx(slo_count) = soildepth(land(i, j))
-  dif_slo_idx(slo_count) = dif(land(i, j))
+
+  ksg_idx(slo_count) = ksg(land(i, j))
+  gammag_idx(slo_count) = gammag(land(i, j))
+  kg0_idx(slo_count) = kg0(land(i, j))
+  fpg_idx(slo_count) = fpg(land(i, j))
+  rgl_idx(slo_count) = rgl(land(i, j))
+
  enddo
 enddo
 
@@ -416,13 +448,14 @@ end subroutine sub_slo_idx2ij4
 
 
 ! storage calculation
-subroutine storage_calc(hs, hr, ss, sr, si, sg)
+subroutine storage_calc(hs, hr, hg, ss, sr, si, sg)
 use globals
 implicit none
 
-real(8) hs(ny, nx), hr(ny, nx)
+real(8) hs(ny, nx), hr(ny, nx), hg(ny, nx)
 real(8) ss, sr, si, sg
-integer i, j
+real(8) vr_temp ! add v1.4
+integer i, j, k
 
 ss = 0.d0
 sr = 0.d0
@@ -432,9 +465,14 @@ do i = 1, ny
  do j = 1, nx
   if( domain(i,j) .eq. 0 ) cycle
   ss = ss + hs(i,j) * area
-  if(riv_thresh.ge.0 .and. riv(i,j).eq.1) sr = sr + hr(i,j) * area * area_ratio(i,j)
+  !if(riv_thresh.ge.0 .and. riv(i,j).eq.1) sr = sr + hr(i,j) * area * area_ratio(i,j)
+  ! modified v1.4
+  if( riv_thresh.ge.0 .and. riv(i,j).eq.1 ) then
+   call hr2vr(hr(i, j), riv_ij2idx(i,j), vr_temp)
+   sr = sr + vr_temp
+  endif
   si = si + gampt_ff(i,j) * area
-  sg = sg + hg(i, j) * area
+  sg = sg - hg(i,j) * gammag_idx(slo_ij2idx(i,j)) * area ! storage deficit
  enddo
 enddo
 
@@ -516,7 +554,7 @@ read(10,*) ctemp, rtemp
 if(abs(yllcorner-rtemp).gt.0.01) stop "error in gis input data (int)"
 read(10,*) ctemp, rtemp
 if(abs(cellsize-rtemp).gt.0.01) stop "error in gis input data (int)"
-read(10,*) ctemp, itemp ! nodata
+read(10,*) ctemp, rtemp ! nodata
 
 do i = 1, ny
  read(10, *) (gis_data(i, j), j = 1, nx)
@@ -548,7 +586,7 @@ read(10,*) ctemp, rtemp
 if(abs(yllcorner-rtemp).gt.0.01) stop "error in gis input data (real)"
 read(10,*) ctemp, rtemp
 if(abs(cellsize-rtemp).gt.0.01) stop "error in gis input data (real)"
-read(10,*) ctemp, itemp ! nodata
+read(10,*) ctemp, rtemp ! nodata
 
 do i = 1, ny
  read(10, *) (gis_data(i, j), j = 1, nx)

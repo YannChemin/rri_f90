@@ -155,8 +155,8 @@ do k = 1, slo_count
  hs_p = hs_idx(k)
  ns_p = ns_slo_idx(k)
  ka_p = ka_idx(k)
- da_p = da_idx(k)
- dm_p = dm_idx(k)
+ da_p = soildepth_idx(k) * gammaa_idx(k)
+ dm_p = soildepth_idx(k) * gammam_idx(k)
  b_p  = beta_idx(k)
 
  dt_cfl_temp(:) = 10000.d0
@@ -176,8 +176,8 @@ do k = 1, slo_count
   hs_n = hs_idx(kk)
   ns_n = ns_slo_idx(kk)
   ka_n = ka_idx(kk)
-  da_n = da_idx(kk)
-  dm_n = dm_idx(kk)
+  da_n = soildepth_idx(kk) * gammaa_idx(kk)
+  dm_n = soildepth_idx(kk) * gammam_idx(kk)
   b_n = beta_idx(kk)
 
   call h2lev(hs_p, k, lev_p)

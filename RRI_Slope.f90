@@ -4,7 +4,6 @@
 
 subroutine funcs(hs_idx, qp_t_idx, fs_idx, qs_idx )
 use globals
-use omp_lib
 implicit none
 
 real(8) hs_idx(slo_count), qp_t_idx(slo_count), fs_idx(slo_count)
@@ -15,7 +14,6 @@ integer k, l, kk, itemp, jtemp
 fs_idx(:) = 0.d0
 qs_idx(:,:) = 0.d0
 
-! This function (QS_CALC) is parallelised
 call qs_calc(hs_idx, qs_idx)
 
 ! boundary condition for slope (discharge boundary)
@@ -25,7 +23,6 @@ if( bound_slo_disc_switch .ge. 1 ) then
  do jtemp = 1, tt_max_bound_slo_disc
   if( t_bound_slo_disc(jtemp-1) .lt. (time + ddt) .and. (time + ddt) .le. t_bound_slo_disc(jtemp) ) itemp = jtemp
  enddo
- !Tentative OMP paralel loop here
  do k = 1, slo_count
   if( bound_slo_disc_idx(itemp, k) .le. -100.0 ) cycle ! not boundary
   ! right
@@ -58,11 +55,11 @@ endif
 
 ! qs_idx > 0 --> discharge flowing out from a cell
 
- !$omp parallel do
+!$omp parallel do
 do k = 1, slo_count
  fs_idx(k) = qp_t_idx(k) - (qs_idx(1,k) + qs_idx(2,k) + qs_idx(3,k) + qs_idx(4,k))
 enddo
- !$omp end parallel do
+!$omp end parallel do
 
 do k = 1, slo_count
  do l = 1, lmax
@@ -97,7 +94,8 @@ integer dif_p, dif_n
 qs_idx = 0.d0
 !emb = 0.d0
 
- !$omp parallel do private(kk,zb_p,hs_p,ns_p,ka_p,da_p,dm_p,b_p,l,distance,len,zb_n,hs_n,ns_n,ka_n,da_n,dm_n,b_n,lev_p,lev_n,dh)
+!$omp parallel do private(kk,zb_p,hs_p,ns_p,ka_p,da_p,dm_p,b_p,dif_p,l,distance,len, &
+!$omp                     zb_n,hs_n,ns_n,ka_n,da_n,dm_n,b_n,dif_n,lev_p,lev_n,dh,hw)
 do k = 1, slo_count
 
  zb_p = zb_slo_idx(k)
@@ -107,10 +105,10 @@ do k = 1, slo_count
  da_p = da_idx(k)
  dm_p = dm_idx(k)
  b_p  = beta_idx(k)
- dif_p = dif_slo_idx(k) ! ADD
+ dif_p = dif_slo_idx(k)
 
  ! 8-direction: lmax = 4, 4-direction: lmax = 2
- do l = 1, lmax ! (1: right, 2: down, 3: right down, 4: left down)
+ do l = 1, lmax ! (1: rightC2: down, 3: right down, 4: left down)
   if( dif_p .eq. 0 .and. l .eq. 2 ) exit ! kinematic -> 1-direction
   kk = down_slo_idx(l, k)
   if( dif_p .eq. 0 ) kk = down_slo_1d_idx(k)
@@ -168,7 +166,7 @@ do k = 1, slo_count
 
  enddo
 enddo
- !$omp end parallel do
+!$omp end parallel do
 
 end subroutine qs_calc
 
@@ -224,13 +222,16 @@ implicit none
 integer k
 real(8) h, lev
 real(8) rho
+real(8) da_temp
+
+da_temp = soildepth_idx(k) * gammaa_idx(k)
 
 if( soildepth_idx(k) .eq. 0.d0 ) then
  lev = h
-elseif( h .ge. da_idx(k) ) then ! including da = 0
- lev = soildepth_idx(k) + (h - da_idx(k)) ! surface water
+elseif( h .ge. da_temp ) then ! including da = 0
+ lev = soildepth_idx(k) + (h - da_temp) ! surface water
 else
- if(soildepth_idx(k) .gt. 0.d0 ) rho = da_idx(k) / soildepth_idx(k)
+ if(soildepth_idx(k) .gt. 0.d0 ) rho = da_temp / soildepth_idx(k)
  lev = h / rho
 endif
 

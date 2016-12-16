@@ -1,29 +1,35 @@
 ! infiltration
-subroutine infilt(hs)
+subroutine infilt(hs_idx, gampt_ff_idx, gampt_f_idx)
 use globals
 implicit none
 
-real(8) hs(ny, nx), gampt_ff_temp(ny, nx)
+real(8) hs_idx(slo_count), gampt_ff_idx(slo_count), gampt_f_idx(slo_count)
+real(8) gampt_ff_temp
+integer k
 
-gampt_f = 0.d0
-gampt_ff_temp = gampt_ff
-where( gampt_ff_temp .le. 0.01d0 ) gampt_ff_temp = 0.01d0
+do k = 1, slo_count
 
-! gampt_f : infiltration capacity [m/s]
-! gampt_ff : accumulated infiltration depth [m]
-gampt_f = ksv * (1.d0 + faif * delta / gampt_ff_temp)
+ gampt_f_idx(k) = 0.d0
+ gampt_ff_temp = gampt_ff_idx(k)
+ if( gampt_ff_temp .le. 0.01d0 ) gampt_ff_temp = 0.01d0
 
-! gampt_f : infiltration capacity -> infiltration rate [m/s]
-where( gampt_f .ge. hs / dt ) gampt_f = hs / dt
+ ! gampt_f_idx(k) : infiltration capacity [m/s]
+ ! gampt_ff : accumulated infiltration depth [m]
+ gampt_f_idx(k) = ksv_idx(k) * (1.d0 + faif_idx(k) * gammaa_idx(k) / gampt_ff_temp)
 
-! gampt_ff should not exceeds a certain level
-where( infilt_limit .ge. 0.d0 .and. gampt_ff .ge. infilt_limit ) gampt_f = 0.d0
+ ! gampt_f_idx(k) : infiltration capacity -> infiltration rate [m/s]
+ if( gampt_f_idx(k) .ge. hs_idx(k) / dt ) gampt_f_idx(k) = hs_idx(k) / dt
 
-! update gampt_ff [m]
-gampt_ff = gampt_ff + gampt_f * dt
+ ! gampt_ff should not exceeds a certain level
+ if( infilt_limit_idx(k) .ge. 0.d0 .and. gampt_ff_idx(k) .ge. infilt_limit_idx(k) ) gampt_f_idx(k) = 0.d0
 
-! hs : hs - infiltration rate * dt [m]
-hs = hs - gampt_f * dt
-where( hs .le. 0.d0 ) hs = 0.d0
+ ! update gampt_ff [m]
+ gampt_ff_idx(k) = gampt_ff_idx(k) + gampt_f_idx(k) * dt
+
+ ! hs : hs - infiltration rate * dt [m]
+ hs_idx(k) = hs_idx(k) - gampt_f_idx(k) * dt
+ if( hs_idx(k) .le. 0.d0 ) hs_idx(k) = 0.d0
+
+enddo
 
 end subroutine infilt

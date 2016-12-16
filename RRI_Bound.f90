@@ -22,7 +22,8 @@ if( bound_slo_wlev_switch .eq. 1 .or. bound_slo_wlev_switch .eq. 2 ) then
  open( 17, file = boundfile_slo_wlev, status = 'old' )
 
  tt = 0
- if( bound_slo_wlev_switch .eq. 1 ) then
+ !if( bound_slo_wlev_switch .eq. 1 ) then
+ if( bound_slo_wlev_switch .eq. 2 ) then
 
   do
    read(17, *, iostat = ios) t, itemp, jtemp
@@ -35,7 +36,7 @@ if( bound_slo_wlev_switch .eq. 1 .or. bound_slo_wlev_switch .eq. 2 ) then
   enddo
   tt_max_bound_slo_wlev = tt - 1
 
- else ! option 2
+ else ! option 1
 
   read(17, *) num_of_bound_point
   read(17, '(a)') ctemp
@@ -60,7 +61,8 @@ if( bound_slo_wlev_switch .eq. 1 .or. bound_slo_wlev_switch .eq. 2 ) then
  bound_slo_wlev_idx = -999.9d0
  rdummy_dim = -999.9d0
 
- if( bound_slo_wlev_switch .eq. 1 ) then
+ !if( bound_slo_wlev_switch .eq. 1 ) then
+ if( bound_slo_wlev_switch .eq. 2 ) then
 
   do tt = 0, tt_max_bound_slo_wlev
    read(17, *) t_bound_slo_wlev(tt), itemp, jtemp
@@ -76,7 +78,7 @@ if( bound_slo_wlev_switch .eq. 1 .or. bound_slo_wlev_switch .eq. 2 ) then
   write(*,*) "done: reading boundary file for slope cells (wlev)"
   close(17)
 
- else ! option 2
+ else ! option 1
 
   read(17, *) itemp
   read(17, *) ctemp, (bound_opt2_loci(k), k = 1, num_of_bound_point)
@@ -107,7 +109,8 @@ if( bound_riv_wlev_switch .eq. 1 .or. bound_riv_wlev_switch .eq. 2 ) then
  open( 18, file = boundfile_riv_wlev, status = 'old' )
 
  tt = 0
- if( bound_riv_wlev_switch .eq. 1 ) then
+ !if( bound_riv_wlev_switch .eq. 1 ) then
+ if( bound_riv_wlev_switch .eq. 2 ) then
 
   do
    read(18, *, iostat = ios) t, itemp, jtemp
@@ -120,7 +123,7 @@ if( bound_riv_wlev_switch .eq. 1 .or. bound_riv_wlev_switch .eq. 2 ) then
   enddo
   tt_max_bound_riv_wlev = tt - 1
 
- else ! option 2
+ else ! option 1
 
   read(18, *) num_of_bound_point
   read(18, '(a)') ctemp
@@ -145,7 +148,8 @@ if( bound_riv_wlev_switch .eq. 1 .or. bound_riv_wlev_switch .eq. 2 ) then
  bound_riv_wlev_idx = -999.9d0
  rdummy_dim = -999.9d0
 
- if( bound_riv_wlev_switch .eq. 1 ) then
+ !if( bound_riv_wlev_switch .eq. 1 ) then
+ if( bound_riv_wlev_switch .eq. 2 ) then
 
   do tt = 0, tt_max_bound_riv_wlev
    read(18, *) t_bound_riv_wlev(tt), itemp, jtemp
@@ -161,7 +165,7 @@ if( bound_riv_wlev_switch .eq. 1 .or. bound_riv_wlev_switch .eq. 2 ) then
   write(*,*) "done: reading boundary file for river cells (wlev)"
   close(18)
 
- else ! option 2
+ else ! option 1
 
   read(18, *) itemp
   read(18, *) ctemp, (bound_opt2_loci(k), k = 1, num_of_bound_point)
@@ -195,7 +199,8 @@ if( bound_slo_disc_switch .eq. 1 .or. bound_slo_disc_switch .eq. 2 ) then
  open( 17, file = boundfile_slo_disc, status = 'old' )
 
  tt = 0
- if( bound_slo_disc_switch .eq. 1 ) then
+ !if( bound_slo_disc_switch .eq. 1 ) then
+ if( bound_slo_disc_switch .eq. 2 ) then
 
   do
    read(17, *, iostat = ios) t, itemp, jtemp
@@ -208,7 +213,7 @@ if( bound_slo_disc_switch .eq. 1 .or. bound_slo_disc_switch .eq. 2 ) then
   enddo
   tt_max_bound_slo_disc = tt - 1
 
- else ! option 2
+ else ! option 1
 
   read(17, *) num_of_bound_point
   read(17, '(a)') ctemp
@@ -233,7 +238,8 @@ if( bound_slo_disc_switch .eq. 1 .or. bound_slo_disc_switch .eq. 2 ) then
  bound_slo_disc_idx = -999.9d0
  rdummy_dim = -999.9d0
 
- if( bound_slo_disc_switch .eq. 1 ) then
+ !if( bound_slo_disc_switch .eq. 1 ) then
+ if( bound_slo_disc_switch .eq. 2 ) then
 
   do tt = 0, tt_max_bound_slo_disc
    read(17, *) t_bound_slo_disc(tt), itemp, jtemp
@@ -249,7 +255,7 @@ if( bound_slo_disc_switch .eq. 1 .or. bound_slo_disc_switch .eq. 2 ) then
   write(*,*) "done: reading boundary file for slope cells (disc)"
   close(17)
 
- else ! option 2
+ else ! option 1
 
   read(17, *) itemp
   read(17, *) ctemp, (bound_opt2_loci(k), k = 1, num_of_bound_point)
@@ -280,7 +286,8 @@ if( bound_riv_disc_switch .eq. 1 .or. bound_riv_disc_switch .eq. 2 ) then
  open( 18, file = boundfile_riv_disc, status = 'old' )
 
  tt = 0
- if( bound_riv_disc_switch .eq. 1 ) then
+ !if( bound_riv_disc_switch .eq. 1 ) then
+ if( bound_riv_disc_switch .eq. 2 ) then
 
   do
    read(18, *, iostat = ios) t, itemp, jtemp
@@ -293,7 +300,7 @@ if( bound_riv_disc_switch .eq. 1 .or. bound_riv_disc_switch .eq. 2 ) then
   enddo
   tt_max_bound_riv_disc = tt - 1
 
- else ! option 2
+ else ! option 1
 
   read(18, *) num_of_bound_point
   read(18, '(a)') ctemp
@@ -318,7 +325,8 @@ if( bound_riv_disc_switch .eq. 1 .or. bound_riv_disc_switch .eq. 2 ) then
  bound_riv_disc_idx = -999.9d0
  rdummy_dim = -999.9d0
 
- if( bound_riv_disc_switch .eq. 1 ) then
+ !if( bound_riv_disc_switch .eq. 1 ) then
+ if( bound_riv_disc_switch .eq. 2 ) then
 
   do tt = 0, tt_max_bound_riv_disc
    read(18, *) t_bound_riv_disc(tt), itemp, jtemp
@@ -334,7 +342,7 @@ if( bound_riv_disc_switch .eq. 1 .or. bound_riv_disc_switch .eq. 2 ) then
   write(*,*) "done: reading boundary file for river cells (disc)"
   close(18)
 
- else ! option 2
+ else ! option 1
 
   read(18, *) itemp
   read(18, *) ctemp, (bound_opt2_loci(k), k = 1, num_of_bound_point)

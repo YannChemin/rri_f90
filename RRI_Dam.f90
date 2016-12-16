@@ -40,17 +40,21 @@ end subroutine dam_read
 subroutine dam_prepare(qr_idx)
 
 use globals
-use dam_mod, only :dam_qin
+!use dam_mod, only :dam_qin
+use dam_mod
 implicit none
-    
-integer :: k, kk
-real(8) :: qr_idx(riv_count)
-    
-dam_qin(:) = 0.d0
-do k = 1, riv_count
- kk = down_riv_idx(k)
- dam_qin(kk) = dam_qin(kk) + qr_idx(k)
-enddo
+
+integer :: i, k, kk
+real(8) :: qr_idx(riv_count), vr_idx(riv_count)
+
+!dam_qin(:) = 0.d0
+!do k = 1, riv_count
+! kk = down_riv_idx(k)
+! dam_qin(kk) = dam_qin(kk) + qr_idx(k)
+!enddo
+
+! modified by TS on June 16, 2016
+dam_qin(:) = qr_idx(:)
 
 end subroutine dam_prepare
 
@@ -58,7 +62,8 @@ end subroutine dam_prepare
 
 subroutine dam_operation(k)
 
-use globals, only :ddt,area
+!use globals, only :ddt,area
+use globals, only :ddt ! v1.4
 use dam_mod
 implicit none
 
@@ -67,13 +72,16 @@ real(8) :: qdiff
     
 dam_qout(damflg(k)) = 0.d0
 
-if ( dam_qin(k) * area .lt. dam_floodq(damflg(k)) ) then 
+!if ( dam_qin(k) * area .lt. dam_floodq(damflg(k)) ) then 
+if ( dam_qin(k) .lt. dam_floodq(damflg(k)) ) then ! v1.4
  dam_qout(damflg(k)) = dam_qin(k)
 else
  if (dam_state(damflg(k)) .eq. 0) then
  ! still have space
-  dam_qout(damflg(k)) = dam_floodq(damflg(k)) / area
-  qdiff = (dam_qin(k) - dam_qout(damflg(k))) * area
+  !dam_qout(damflg(k)) = dam_floodq(damflg(k)) / area
+  dam_qout(damflg(k)) = dam_floodq(damflg(k)) ! v1.4
+  !qdiff = (dam_qin(k) - dam_qout(damflg(k))) * area
+  qdiff = (dam_qin(k) - dam_qout(damflg(k))) ! v1.4
   dam_vol_temp(damflg(k)) = dam_vol_temp(damflg(k)) + qdiff * ddt
  else
   ! no more space
@@ -106,11 +114,12 @@ end subroutine dam_checkstate
 
 subroutine dam_write
 
-use globals, only :area
+!use globals, only :area
 use dam_mod
 implicit none
 integer i
 
-write(1001,'(100f20.5)') (dam_vol(i), dam_qin(dam_loc(i)) * area, dam_qout(i) * area, i = 1, dam_num) 
+!write(1001,'(100f20.5)') (dam_vol(i), dam_qin(dam_loc(i)) * area, dam_qout(i) * area, i = 1, dam_num) 
+write(1001,'(100f20.5)') (dam_vol(i), dam_qin(dam_loc(i)), dam_qout(i), i = 1, dam_num) ! v1.4
     
 end subroutine dam_write

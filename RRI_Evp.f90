@@ -1,11 +1,11 @@
 ! RRI_Evp
 
 ! Evapotranspiration
-subroutine evp( hs_idx )
+subroutine evp( hs_idx, gampt_ff_idx )
 use globals
 implicit none
 
-real(8) hs_idx(slo_count), qe_t_temp
+real(8) hs_idx(slo_count), gampt_ff_idx(slo_count), qe_t_temp
 integer i, j, k, itemp, jtemp
 
 itemp = -1
@@ -19,8 +19,8 @@ do i = 1, ny
 enddo
 call sub_slo_ij2idx( qe_t, qe_t_idx )
 
-! evp_switch = 1 : Allow ET from gampt_ff
-!            = 2 : Do not take ET from gampt_ff
+! evp_switch = 1 : Allow ET from gampt_ff_idx
+!            = 2 : Do not take ET from gampt_ff_idx
 
 do k = 1, slo_count
  i = slo_idx2i(k)
@@ -33,7 +33,7 @@ do k = 1, slo_count
  !endif
 
  if( evp_switch .eq. 1 ) then
-  aevp(i, j) = min( qe_t_temp, (hs_idx(k) + gampt_ff(i, j)) / dt )
+  aevp(i, j) = min( qe_t_temp, (hs_idx(k) + gampt_ff_idx(k)) / dt )
  else
   aevp(i, j) = min( qe_t_temp, hs_idx(k) / dt )
  endif
@@ -42,11 +42,11 @@ do k = 1, slo_count
  hs_idx(k) = hs_idx(k) - aevp(i, j) * dt
  if( hs_idx(k) .lt. 0.d0 ) then
 
-  if( evp_switch .eq. 1 ) gampt_ff(i, j) = gampt_ff(i, j) + hs_idx(k)
+  if( evp_switch .eq. 1 ) gampt_ff_idx(k) = gampt_ff_idx(k) + hs_idx(k)
 
   hs_idx(k) = 0.d0
-  if( gampt_ff(i, j) .lt. 0.d0 ) then
-   gampt_ff(i, j) = 0.d0
+  if( gampt_ff_idx(k) .lt. 0.d0 ) then
+   gampt_ff_idx(k) = 0.d0
   endif
  endif
  aevp_sum = aevp_sum + aevp(i, j) * dt * area
